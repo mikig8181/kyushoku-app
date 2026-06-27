@@ -9,7 +9,7 @@ async function callClaude(prompt: string): Promise<string> {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     }),
   })
@@ -29,36 +29,21 @@ export async function parseMenuFromText(
   year: number,
   month: number
 ): Promise<DayMenu[]> {
-  const prompt = `
-以下は保育園の${year}年${month}月の献立表から抽出したテキストです。
-このテキストを解析して、各日の給食（昼食）とおやつのメニューを抽出してください。
+  const prompt = `保育園の${year}年${month}月の献立表テキストから、各日の昼食とおやつを抽出してください。
 
 テキスト:
----
 ${rawText}
----
 
-以下のJSON形式で返してください。日付はYYYY-MM-DD形式にしてください。
-メニュー名は日本語そのままで、categoryは lunch の items か snack の items に分類してください。
+以下のJSON形式のみで返してください（説明文不要）:
+{"days":[{"date":"${year}-${String(month).padStart(2,'0')}-01","lunch":[{"name":"料理名","category":"main"}],"snack":[{"name":"おやつ名","category":"snack"}]}]}
 
-{
-  "days": [
-    {
-      "date": "2024-01-06",
-      "lunch": [
-        {"name": "ごはん", "category": "main"},
-        {"name": "鶏の唐揚げ", "category": "main"},
-        {"name": "みそ汁", "category": "soup"}
-      ],
-      "snack": [
-        {"name": "りんご", "category": "snack"}
-      ]
-    }
-  ]
-}
-
-土日・祝日はスキップしてください。JSONのみ返してください（説明文不要）。
-`
+ルール:
+- 土日祝はスキップ
+- dateはYYYY-MM-DD形式
+- 昼食のcategoryはmain/soup/sideのいずれか
+- おやつのcategoryはsnack
+- 牛乳・麦茶は省略してOK
+- JSONのみ返す`
 
   const result = await callClaude(prompt)
   const jsonMatch = result.match(/\{[\s\S]*\}/)
