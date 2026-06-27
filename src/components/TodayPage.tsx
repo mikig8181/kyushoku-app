@@ -7,7 +7,8 @@ import { CHILDREN } from '../lib/children'
 import type { ChildName, DayMenu, DinnerSuggestion } from '../types'
 
 export function TodayPage() {
-  const today = format(new Date(), 'yyyy-MM-dd')
+  const realToday = format(new Date(), 'yyyy-MM-dd')
+  const [today, setToday] = useState(realToday)
   const [selectedChild, setSelectedChild] = useState<ChildName>('rinka')
   const [menu, setMenu] = useState<DayMenu | null>(null)
   const [suggestions, setSuggestions] = useState<DinnerSuggestion[]>([])
@@ -33,14 +34,24 @@ export function TodayPage() {
     }
   }
 
-  const dateLabel = format(new Date(), 'M月d日（EEE）', { locale: ja })
+  const dateLabel = format(new Date(today), 'M月d日（EEE）', { locale: ja })
 
   return (
     <div className="p-4 max-w-md mx-auto">
       <h1 className="text-2xl font-bold text-pink-500 text-center mb-2">
         🍱 きょうの給食
       </h1>
-      <p className="text-center text-gray-500 text-sm mb-4">{dateLabel}</p>
+      <p className="text-center text-gray-500 text-sm mb-1">{dateLabel}</p>
+
+      {/* テスト用日付切り替え */}
+      <div className="flex justify-center mb-4">
+        <input
+          type="date"
+          value={today}
+          onChange={(e) => setToday(e.target.value)}
+          className="text-xs text-gray-400 border border-gray-200 rounded-xl px-2 py-1"
+        />
+      </div>
 
       {/* 子ども切り替え */}
       <div className="flex gap-3 mb-5">
