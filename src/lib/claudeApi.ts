@@ -1,23 +1,12 @@
 import type { DayMenu, DinnerSuggestion, FoodRecord } from '../types'
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-
-function getApiKey(): string {
-  return localStorage.getItem('anthropic_api_key') || import.meta.env.VITE_ANTHROPIC_API_KEY || ''
-}
+// Vercel Edge Function経由でAPIを呼ぶ（CORSを回避）
+const API_URL = '/api/claude'
 
 async function callClaude(prompt: string): Promise<string> {
-  const apiKey = getApiKey()
-  if (!apiKey) throw new Error('APIキーが設定されていません。「設定」タブから入力してください。')
-
-  const res = await fetch(ANTHROPIC_API_URL, {
+  const res = await fetch(API_URL, {
     method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-direct-browser-calls': 'true',
-    },
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2048,
