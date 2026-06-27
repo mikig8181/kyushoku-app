@@ -57,10 +57,19 @@ ${trimmedText}
 // 夕食提案を生成
 export async function suggestDinner(
   todayMenu: DayMenu,
-  foodRecords: FoodRecord[]
+  foodRecords: FoodRecord[],
+  upcomingMenus: DayMenu[] = []
 ): Promise<DinnerSuggestion[]> {
   const lunchItems = todayMenu.lunch.map((m) => m.name).join('、')
   const snackItems = todayMenu.snack.map((m) => m.name).join('、')
+
+  // 翌日・翌々日の給食まとめ
+  const upcomingText = upcomingMenus.length > 0
+    ? upcomingMenus.map((m, i) => {
+        const label = i === 0 ? '明後日' : `${i + 2}日後`
+        return `${label}(${m.date}): ${m.lunch.map((l) => l.name).join('、')}`
+      }).join('\n')
+    : 'データなし'
 
   // 好みサマリー
   const loved = [...new Set(foodRecords.filter((r) => r.reaction === 'loved').map((r) => r.menuItemName))]
@@ -73,12 +82,15 @@ export async function suggestDinner(
 昼食: ${lunchItems}
 おやつ: ${snackItems}
 
+【明後日以降の給食（かぶり防止のため参考に）】
+${upcomingText}
+
 【子どもたちの好み（過去の記録より）】
 好きなもの: ${loved.length > 0 ? loved.join('、') : 'データなし'}
 苦手なもの: ${disliked.length > 0 ? disliked.join('、') : 'データなし'}
 
 【条件】
-- 給食と食材・料理がかぶらない
+- 明日・明後日の給食と食材・料理がかぶらない
 - 共働きで時間がない → 1時間以内に3品作れる時短レシピ、または1週間作り置き可能なレシピ
 - 子どもたちが食べやすい味付け
 - 子どもの苦手なものは避ける

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { format } from 'date-fns'
+import { format, addDays } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { getTodayMenu, getFoodRecords } from '../lib/menuStore'
 import { suggestDinner } from '../lib/claudeApi'
@@ -25,7 +25,12 @@ export function TodayPage() {
     setLoadingSuggestions(true)
     try {
       const records = getFoodRecords(selectedChild)
-      const result = await suggestDinner(menu, records)
+      // 翌日・翌々日の給食を取得（かぶり防止）
+      const upcoming = [1, 2].map((offset) => {
+        const d = format(addDays(new Date(today), offset), 'yyyy-MM-dd')
+        return getTodayMenu(selectedChild, d)
+      }).filter(Boolean) as import('../types').DayMenu[]
+      const result = await suggestDinner(menu, records, upcoming)
       setSuggestions(result)
     } catch (e) {
       console.error(e)
