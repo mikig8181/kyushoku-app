@@ -8,8 +8,8 @@ async function callClaude(prompt: string): Promise<string> {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8192,
       messages: [{ role: 'user', content: prompt }],
     }),
   })
@@ -29,10 +29,11 @@ export async function parseMenuFromText(
   year: number,
   month: number
 ): Promise<DayMenu[]> {
+  const trimmedText = rawText.slice(0, 6000)
   const prompt = `保育園の${year}年${month}月の献立表テキストから、各日の昼食とおやつを抽出してください。
 
 テキスト:
-${rawText}
+${trimmedText}
 
 以下のJSON形式のみで返してください（説明文不要）:
 {"days":[{"date":"${year}-${String(month).padStart(2,'0')}-01","lunch":[{"name":"料理名","category":"main"}],"snack":[{"name":"おやつ名","category":"snack"}]}]}
