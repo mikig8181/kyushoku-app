@@ -16,8 +16,8 @@ export default defineConfig({
         background_color: '#fff0f5',
         display: 'standalone',
         icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' }
+          { src: 'pwa-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
+          { src: 'pwa-512x512.svg', sizes: '512x512', type: 'image/svg+xml' }
         ]
       }
     })
