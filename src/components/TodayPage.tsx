@@ -13,6 +13,7 @@ export function TodayPage() {
   const [menu, setMenu] = useState<DayMenu | null>(null)
   const [suggestions, setSuggestions] = useState<DinnerSuggestion[]>([])
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
+  const [fridgeIngredients, setFridgeIngredients] = useState('')
 
   useEffect(() => {
     const m = getTodayMenu(selectedChild, today)
@@ -30,7 +31,7 @@ export function TodayPage() {
         const d = format(addDays(new Date(today), offset), 'yyyy-MM-dd')
         return getTodayMenu(selectedChild, d)
       }).filter(Boolean) as import('../types').DayMenu[]
-      const result = await suggestDinner(menu, records, upcoming)
+      const result = await suggestDinner(menu, records, upcoming, fridgeIngredients)
       setSuggestions(result)
     } catch (e) {
       console.error(e)
@@ -83,6 +84,19 @@ export function TodayPage() {
           {menu.snack.length > 0 && (
             <MenuSection title="🍪 おやつ" items={menu.snack} color="mint" />
           )}
+
+          {/* 冷蔵庫の食材入力 */}
+          <div className="mt-5 bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4">
+            <p className="font-bold text-yellow-700 mb-2">🧊 冷蔵庫にある食材（任意）</p>
+            <textarea
+              value={fridgeIngredients}
+              onChange={(e) => setFridgeIngredients(e.target.value)}
+              placeholder="例：豚肉、にんじん、玉ねぎ、豆腐"
+              rows={2}
+              className="w-full text-sm border border-yellow-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
+            />
+            <p className="text-xs text-yellow-600 mt-1">入力すると、その食材を使ったレシピを優先して提案します</p>
+          </div>
 
           {/* 夕食提案ボタン */}
           <button

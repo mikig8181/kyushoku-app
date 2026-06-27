@@ -58,7 +58,8 @@ ${trimmedText}
 export async function suggestDinner(
   todayMenu: DayMenu,
   foodRecords: FoodRecord[],
-  upcomingMenus: DayMenu[] = []
+  upcomingMenus: DayMenu[] = [],
+  fridgeIngredients: string = ''
 ): Promise<DinnerSuggestion[]> {
   const lunchItems = todayMenu.lunch.map((m) => m.name).join('、')
   const snackItems = todayMenu.snack.map((m) => m.name).join('、')
@@ -89,8 +90,12 @@ ${upcomingText}
 好きなもの: ${loved.length > 0 ? loved.join('、') : 'データなし'}
 苦手なもの: ${disliked.length > 0 ? disliked.join('、') : 'データなし'}
 
+【冷蔵庫にある食材】
+${fridgeIngredients.trim() !== '' ? fridgeIngredients : 'なし（食材指定なし）'}
+
 【条件】
 - 明日・明後日の給食と食材・料理がかぶらない
+- 冷蔵庫の食材がある場合はそれを優先的に使う
 - 共働きで時間がない → 1時間以内に3品作れる時短レシピ、または1週間作り置き可能なレシピ
 - 子どもたちが食べやすい味付け
 - 子どもの苦手なものは避ける
